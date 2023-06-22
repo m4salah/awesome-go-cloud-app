@@ -7,9 +7,12 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/awslabs/aws-lambda-go-api-proxy/httpadapter"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
@@ -53,6 +56,10 @@ func New(opts Options) *Server {
 func (s *Server) Start() error {
 	s.setupRoutes()
 
+	if va, ok := os.LookupEnv("AWS_LAMBDA_RUNTIME_API"); ok {
+		s.log.Info("Starting inside lambda", zap.String("AWS_LAMBDA_RUNTIME_API", va))
+		lambda.Start(httpadapter.New(s.mux).ProxyWithContext)
+	}
 	s.log.Info("Starting", zap.String("address", s.address))
 	if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return fmt.Errorf("error starting server: %w", err)
