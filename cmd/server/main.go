@@ -3,7 +3,6 @@
 package main
 
 import (
-	"fmt"
 	"context"
 	"fmt"
 	"os"
@@ -16,9 +15,6 @@ import (
 
 	"canvas/server"
 )
-
-func main() {
-	fmt.Println("🤓")
 
 // release is set through the linker at build time, generally from a git sha.
 // Used for logging and error reporting.
