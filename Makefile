@@ -7,8 +7,8 @@ start:
 	go run cmd/server/*.go
 
 build-lambda:
-	GOOS=linux go build -ldflags '-s -w' cmd/server/*.go 
-	zip main_archived_cloud.zip main
+	GOOS=linux go build -o bin/main -ldflags '-s -w' cmd/server/*.go 
+	zip bin_archived/main_archived.zip bin/main
 
 test:
 	go test -coverprofile=cover.out -short ./...
