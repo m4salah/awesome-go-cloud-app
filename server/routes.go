@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-const globalPrefix = "/hello"
+const globalPrefix = "/canvas"
 
 func (s *Server) setupRoutes() {
 	s.mux.Route(globalPrefix, func(r chi.Router) {
