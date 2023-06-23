@@ -1,3 +1,4 @@
 package k
 
-const RootPath = "/services/canvas/home"
+const GlobalPrefix = "/canvas"
+const RootPath = "/services" + GlobalPrefix + "/home"
