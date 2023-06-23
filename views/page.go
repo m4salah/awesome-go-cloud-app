@@ -1,6 +1,8 @@
 package views
 
 import (
+	"canvas/k"
+
 	g "github.com/maragudk/gomponents"
 	"github.com/maragudk/gomponents-heroicons/outline"
 	c "github.com/maragudk/gomponents/components"
@@ -29,7 +31,7 @@ func Navbar(path string) g.Node {
 		Container(false,
 			Div(Class("flex items-center space-x-4 h-16"),
 				Div(Class("flex-shrink-0"), outline.Globe(Class("h-6 w-6"))),
-				NavbarLink("/", "Home", path),
+				NavbarLink(k.RootPath, "Home", path),
 			),
 		),
 	)
