@@ -2,11 +2,13 @@ package server_test
 
 import (
 	"net/http"
+	"net/url"
 	"testing"
 
 	"github.com/matryer/is"
 
 	"canvas/integrationtest"
+	"canvas/k"
 )
 
 func TestServer_Start(t *testing.T) {
@@ -18,7 +20,9 @@ func TestServer_Start(t *testing.T) {
 		cleanup := integrationtest.CreateServer()
 		defer cleanup()
 
-		resp, err := http.Get("http://localhost:8081/")
+		healthEndpoint, err := url.JoinPath("http://localhost:8081/", k.GlobalPrefix, "health")
+		is.NoErr(err)
+		resp, err := http.Get(healthEndpoint)
 		is.NoErr(err)
 		is.Equal(http.StatusOK, resp.StatusCode)
 	})
