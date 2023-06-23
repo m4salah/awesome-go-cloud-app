@@ -1,3 +1,6 @@
 /cover.out
 bin/*
 bin_archived/*
+
+*.terraform*
+terraform/terraform*
