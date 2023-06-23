@@ -21,8 +21,15 @@ jobs:
           go-version: 1.20
 
       - name: Install dependencies
-        run: go install
-
+        run: |
+          go get github.com/aws/aws-lambda-go
+          go get github.com/awslabs/aws-lambda-go-api-proxy
+          go get github.com/go-chi/chi/v5
+          go get github.com/maragudk/gomponents
+          go get github.com/maragudk/gomponents-heroicons
+          go get github.com/matryer/is
+          go get go.uber.org/zap
+          go get golang.org/x/sync
       - name: Build
         run: go build -v ./...
 
