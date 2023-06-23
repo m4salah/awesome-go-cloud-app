@@ -2,9 +2,6 @@
 
 export image := `aws lightsail get-container-images --service-name canvas | jq -r '.containerImages[0].image'`
 
-build:
-	docker build -t canvas .
-
 cover:
 	go tool cover -html=cover.out
 
