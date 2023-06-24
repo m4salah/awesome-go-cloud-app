@@ -36,6 +36,21 @@ resource "aws_iam_role_policy_attachment" "terraform_lambda_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_iam_role_policy" "dynamodb-lambda-policy" {
+  name = "dynamodb_lambda_policy"
+  role = aws_iam_role.terraform_function_role.id
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : ["dynamodb:*"],
+        "Resource" : "${aws_dynamodb_table.newsletter_subscribers.arn}"
+      }
+    ]
+  })
+}
+
 // Build main.go first
 resource "null_resource" "build-canvas-lambda" {
   provisioner "local-exec" {
@@ -121,4 +136,25 @@ resource "aws_api_gateway_stage" "rest-api-services-stage" {
   deployment_id = aws_api_gateway_deployment.api_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.rest-api-gateway.id
   stage_name    = "services"
+}
+
+// dynamodb table
+
+resource "aws_dynamodb_table" "newsletter_subscribers" {
+  name             = "newsletter_subscribers"
+  billing_mode     = "PAY_PER_REQUEST"
+  hash_key         = "email"
+  range_key        = "token"
+  stream_enabled   = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
+
+  attribute {
+    name = "email"
+    type = "S"
+  }
+
+  attribute {
+    name = "token"
+    type = "S"
+  }
 }
