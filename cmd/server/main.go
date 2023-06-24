@@ -14,6 +14,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"canvas/server"
+	"canvas/storage"
 )
 
 // release is set through the linker at build time, generally from a git sha.
@@ -42,9 +43,10 @@ func start() int {
 	port := getIntOrDefault("PORT", 8080)
 
 	s := server.New(server.Options{
-		Host: host,
-		Log:  log,
-		Port: port,
+		Database: createDatabase(log),
+		Host:     host,
+		Log:      log,
+		Port:     port,
 	})
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
@@ -104,4 +106,9 @@ func getIntOrDefault(name string, defaultV int) int {
 		return defaultV
 	}
 	return vAsInt
+}
+func createDatabase(log *zap.Logger) *storage.Database {
+	return storage.NewDatabase(storage.NewDatabaseOptions{
+		Log: log,
+	})
 }

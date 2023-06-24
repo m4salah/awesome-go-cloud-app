@@ -2,6 +2,7 @@
 package server
 
 import (
+	"canvas/storage"
 	"context"
 	"errors"
 	"fmt"
@@ -18,16 +19,18 @@ import (
 )
 
 type Server struct {
-	address string
-	log     *zap.Logger
-	mux     chi.Router
-	server  *http.Server
+	address  string
+	database *storage.Database
+	log      *zap.Logger
+	mux      chi.Router
+	server   *http.Server
 }
 
 type Options struct {
-	Host string
-	Log  *zap.Logger
-	Port int
+	Database *storage.Database
+	Host     string
+	Log      *zap.Logger
+	Port     int
 }
 
 func New(opts Options) *Server {
@@ -38,9 +41,10 @@ func New(opts Options) *Server {
 	address := net.JoinHostPort(opts.Host, strconv.Itoa(opts.Port))
 	mux := chi.NewMux()
 	return &Server{
-		address: address,
-		log:     opts.Log,
-		mux:     mux,
+		address:  address,
+		database: opts.Database,
+		log:      opts.Log,
+		mux:      mux,
 		server: &http.Server{
 			Addr:              address,
 			Handler:           mux,
@@ -54,6 +58,11 @@ func New(opts Options) *Server {
 
 // Start the Server by setting up routes and listening for HTTP requests on the given address.
 func (s *Server) Start() error {
+
+	if err := s.database.Connect(); err != nil {
+		s.log.Error("Error while connecting to database", zap.Error(err))
+		return fmt.Errorf("error connecting to database: %w", err)
+	}
 	s.setupRoutes()
 
 	if va, ok := os.LookupEnv("AWS_LAMBDA_RUNTIME_API"); ok {
