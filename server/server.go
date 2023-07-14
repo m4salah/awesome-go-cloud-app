@@ -60,7 +60,6 @@ func New(opts Options) *Server {
 func (s *Server) Start() error {
 
 	if err := s.database.Connect(); err != nil {
-		s.log.Error("Error while connecting to database", zap.Error(err))
 		return fmt.Errorf("error connecting to database: %w", err)
 	}
 	s.setupRoutes()

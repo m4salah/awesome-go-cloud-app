@@ -7,18 +7,20 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"go.uber.org/zap"
 )
 
 // Database is the relational storage abstraction.
 type Database struct {
-	DB  *dynamodb.DynamoDB
+	DB  dynamodbiface.DynamoDBAPI
 	log *zap.Logger
 }
 
 // NewDatabaseOptions for NewDatabase.
 type NewDatabaseOptions struct {
 	Log *zap.Logger
+	DB  dynamodbiface.DynamoDBAPI
 }
 
 // NewDatabase with the given options.
@@ -29,11 +31,15 @@ func NewDatabase(opts NewDatabaseOptions) *Database {
 	}
 	return &Database{
 		log: opts.Log,
+		DB:  opts.DB,
 	}
 }
 
 // Connect to the database.
 func (d *Database) Connect() error {
+	if d.DB != nil {
+		return nil
+	}
 	_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -49,5 +55,10 @@ func (d *Database) Connect() error {
 
 	d.log.Debug("Setting connection to dynamodb")
 
+	return nil
+}
+
+// Ping the database.
+func (d *Database) Ping(ctx context.Context) error {
 	return nil
 }
